@@ -1,0 +1,391 @@
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+  color: #111827;
+  background-color: #f3f4f6;
+}
+
+.sidebar {
+  width: 240px;
+  background-color: #0b1f3b;
+  color: #e5e7eb;
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  box-shadow: 4px 0 16px rgba(0, 0, 0, 0.5);
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.sidebar-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.sidebar-toggle {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid #4b5563;
+  background: transparent;
+  color: #e5e7eb;
+  cursor: pointer;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-toggle:hover {
+  background-color: #1d3557;
+}
+
+.sidebar-collapsed {
+  width: 64px;
+  padding: 1rem 0.5rem;
+  align-items: center;
+}
+
+.sidebar-collapsed .sidebar-title {
+  font-size: 1rem;
+  text-align: center;
+}
+
+.sidebar-collapsed .sidebar-title div {
+  display: none;
+}
+
+.sidebar-collapsed .sidebar-nav {
+  display: none;
+}
+
+.sidebar-nav {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sidebar-nav li {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.sidebar-nav li:hover {
+  background-color: #1d3557;
+  transform: translateX(2px);
+}
+
+.sidebar-nav li.active {
+  background-color: #1d4ed8;
+}
+
+.main-content {
+  flex: 1;
+  padding: 1.5rem 2rem;
+  overflow-y: auto;
+}
+
+.main-content h1 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.section {
+  margin-bottom: 2rem;
+  padding: 1.25rem 1.5rem;
+  background-color: #ffffff;
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+}
+
+.section h2 {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+}
+
+.error {
+  color: #fecaca;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.form-field label {
+  font-size: 0.85rem;
+  color: #4b5563;
+}
+
+.form-field input,
+.form-field select {
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.375rem;
+  border: 1px solid #d1d5db;
+  font-size: 0.9rem;
+}
+
+.primary-btn {
+  padding: 0.45rem 0.9rem;
+  border-radius: 0.375rem;
+  border: none;
+  background-color: #1d4ed8;
+  color: #ffffff;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.primary-btn:hover {
+  background-color: #1e40af;
+}
+
+.muted {
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+.stacked-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.stacked-list li {
+  padding: 0.25rem 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.stacked-list li:last-child {
+  border-bottom: none;
+}
+
+.row-actions {
+  margin-left: 0.75rem;
+  display: inline-flex;
+  gap: 0.25rem;
+}
+
+.icon-btn {
+  padding: 0.15rem 0.35rem;
+  font-size: 0.75rem;
+  border-radius: 0.25rem;
+  border: 1px solid #d1d5db;
+  background-color: #f9fafb;
+  cursor: pointer;
+}
+
+.icon-btn.danger {
+  border-color: #fca5a5;
+  color: #b91c1c;
+}
+
+/* Generic data grid */
+.data-grid {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.data-grid table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.data-grid thead {
+  background-color: #f9fafb;
+}
+
+.data-grid th,
+.data-grid td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.data-grid th {
+  font-weight: 600;
+  color: #4b5563;
+  white-space: nowrap;
+}
+
+.data-grid tbody tr:hover {
+  background-color: #f3f4f6;
+}
+
+.data-grid input[type="text"],
+.data-grid input[type="search"] {
+  width: 100%;
+  padding: 0.25rem 0.4rem;
+  border-radius: 0.25rem;
+  border: 1px solid #e5e7eb;
+  font-size: 0.8rem;
+}
+
+.dashboard-charts {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.dashboard-chart-card {
+  flex: 1 1 260px;
+  max-width: 420px;
+  background: #ffffff;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
+  padding: 1rem;
+}
+
+.dashboard-chart-card h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+/* Seat-style bed map */
+.bed-map {
+  margin-top: 0.75rem;
+}
+
+.bed-map-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.bed-seat {
+  width: 42px;
+  height: 42px;
+  border-radius: 0.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border: 1px solid #d1d5db;
+}
+
+.bed-seat.available {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.bed-seat.occupied {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.bed-map-legend {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: #4b5563;
+}
+
+/* Responsive layout for tablets and mobile */
+@media (max-width: 768px) {
+  .app-shell {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    flex-direction: column;
+    box-shadow: none;
+  }
+
+  .sidebar-header {
+    margin-bottom: 0.75rem;
+  }
+
+  .sidebar-nav li {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.6rem;
+  }
+
+  .main-content {
+    padding: 1rem;
+  }
+
+  .section {
+    padding: 1rem;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-charts {
+    flex-direction: column;
+  }
+}
+
+.bed-map-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.bed-map-legend-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 0.25rem;
+  border: 1px solid #d1d5db;
+}
+
+.bed-status-building-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  background-color: #f9fafb;
+}
+
+.bed-status-building-title {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.bed-status-floor-block {
+  margin-bottom: 0.75rem;
+}
+
+.bed-status-floor-title {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #4b5563;
+  margin-bottom: 0.35rem;
+}
+
+.bed-status-room-block {
+  margin-bottom: 0.5rem;
+}
+
+.bed-status-room-title {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+}
