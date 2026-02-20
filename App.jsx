@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import api from "./services/api";
 import * as XLSX from 'xlsx';
 import {
   Chart as ChartJS,
@@ -12,10 +13,35 @@ import {
 import { Pie, Bar } from 'react-chartjs-2';
 import './App.css';
 
+
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+//const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE;
 
+// Helper to always send ngrok header so remote (Vercel + ngrok)
+// works the same as local network calls.
+async function apiFetch(path, options = {}) {
+  const url = `${API_BASE_URL}${path}`;
+  const headers = {
+    "ngrok-skip-browser-warning": "true",
+    ...(options.headers || {}),
+  };
+
+  return fetch(url, { ...options, headers });
+}
+
+// Safely parse JSON, treating 204 (No Content) or invalid JSON
+// as "no data" instead of throwing.
+async function safeJson(res) {
+  if (!res) return null;
+  if (res.status === 204) return null;
+  try {
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
 function App() {
   const [health, setHealth] = useState(null);
   const [buildings, setBuildings] = useState([]);
@@ -137,49 +163,50 @@ function App() {
     async function fetchData() {
       try {
         setError('');
-        const healthRes = await fetch(`${API_BASE_URL}/health`);
-        const healthJson = await healthRes.json();
+
+        const healthRes = await apiFetch('/health');
+        const healthJson = (await safeJson(healthRes)) || { status: 'ok' };
         setHealth(healthJson);
 
-        const bRes = await fetch(`${API_BASE_URL}/buildings`);
+        const bRes = await apiFetch('/buildings');
         if (bRes.ok) {
-          const bJson = await bRes.json();
+          const bJson = (await safeJson(bRes)) || [];
           setBuildings(bJson);
         }
 
-        const fRes = await fetch(`${API_BASE_URL}/floors`);
+        const fRes = await apiFetch('/floors');
         if (fRes.ok) {
-          const fJson = await fRes.json();
+          const fJson = (await safeJson(fRes)) || [];
           setFloors(fJson);
         }
 
-        const flRes = await fetch(`${API_BASE_URL}/flats`);
+        const flRes = await apiFetch('/flats');
         if (flRes.ok) {
-          const flJson = await flRes.json();
+          const flJson = (await safeJson(flRes)) || [];
           setFlats(flJson);
         }
 
-        const rRes = await fetch(`${API_BASE_URL}/rooms`);
+        const rRes = await apiFetch('/rooms');
         if (rRes.ok) {
-          const rJson = await rRes.json();
+          const rJson = (await safeJson(rRes)) || [];
           setRooms(rJson);
         }
 
-        const bedRes = await fetch(`${API_BASE_URL}/beds`);
+        const bedRes = await apiFetch('/beds');
         if (bedRes.ok) {
-          const bedJson = await bedRes.json();
+          const bedJson = (await safeJson(bedRes)) || [];
           setBeds(bedJson);
         }
 
-        const eRes = await fetch(`${API_BASE_URL}/employees`);
+        const eRes = await apiFetch('/employees');
         if (eRes.ok) {
-          const eJson = await eRes.json();
+          const eJson = (await safeJson(eRes)) || [];
           setEmployees(eJson);
         }
 
-        const aRes = await fetch(`${API_BASE_URL}/assignments`);
+        const aRes = await apiFetch('/assignments');
         if (aRes.ok) {
-          const aJson = await aRes.json();
+          const aJson = (await safeJson(aRes)) || [];
           setAssignments(aJson);
         }
       } catch (err) {
@@ -197,13 +224,13 @@ function App() {
     try {
       let res;
       if (editingEmployeeId) {
-        res = await fetch(`${API_BASE_URL}/employees/${editingEmployeeId}`, {
+        res = await apiFetch(`/employees/${editingEmployeeId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(empForm),
         });
       } else {
-        res = await fetch(`${API_BASE_URL}/employees`, {
+        res = await apiFetch('/employees', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(empForm),
@@ -252,7 +279,7 @@ function App() {
   async function handleDeleteBuilding(id) {
     if (!window.confirm('Delete this building?')) return;
     try {
-      const res = await fetch(`${API_BASE_URL}/buildings/${id}`, { method: 'DELETE' });
+      const res = await apiFetch(`/buildings/${id}`, { method: 'DELETE' });
       if (!res.ok && res.status !== 204) return;
       setBuildings((prev) => prev.filter((b) => b.BuildingID !== id));
     } catch {}
@@ -271,7 +298,7 @@ function App() {
   async function handleDeleteFloor(id) {
     if (!window.confirm('Delete this floor?')) return;
     try {
-      const res = await fetch(`${API_BASE_URL}/floors/${id}`, { method: 'DELETE' });
+      const res = await apiFetch(`/floors/${id}`, { method: 'DELETE' });
       if (!res.ok && res.status !== 204) return;
       setFloors((prev) => prev.filter((f) => f.FloorID !== id));
     } catch {}
@@ -290,7 +317,7 @@ function App() {
   async function handleDeleteFlat(id) {
     if (!window.confirm('Delete this flat?')) return;
     try {
-      const res = await fetch(`${API_BASE_URL}/flats/${id}`, { method: 'DELETE' });
+      const res = await apiFetch(`/flats/${id}`, { method: 'DELETE' });
       if (!res.ok && res.status !== 204) return;
       setFlats((prev) => prev.filter((fl) => fl.FlatID !== id));
     } catch {}
@@ -311,7 +338,7 @@ function App() {
   async function handleDeleteRoom(id) {
     if (!window.confirm('Delete this room?')) return;
     try {
-      const res = await fetch(`${API_BASE_URL}/rooms/${id}`, { method: 'DELETE' });
+      const res = await apiFetch(`/rooms/${id}`, { method: 'DELETE' });
       if (!res.ok && res.status !== 204) return;
       setRooms((prev) => prev.filter((r) => r.RoomID !== id));
     } catch {}
@@ -329,7 +356,7 @@ function App() {
   async function handleDeleteBed(id) {
     if (!window.confirm('Delete this bed?')) return;
     try {
-      const res = await fetch(`${API_BASE_URL}/beds/${id}`, { method: 'DELETE' });
+      const res = await apiFetch(`/beds/${id}`, { method: 'DELETE' });
       if (!res.ok && res.status !== 204) return;
       setBeds((prev) => prev.filter((b) => b.BedID !== id));
     } catch {}
@@ -338,7 +365,7 @@ function App() {
   async function handleDeleteEmployee(id) {
     if (!window.confirm('Delete this employee?')) return;
     try {
-      const res = await fetch(`${API_BASE_URL}/employees/${id}`, { method: 'DELETE' });
+      const res = await apiFetch(`/employees/${id}`, { method: 'DELETE' });
       if (!res.ok && res.status !== 204) return;
       setEmployees((prev) => prev.filter((e) => e.EmployeeID !== id));
     } catch {}
@@ -364,13 +391,13 @@ function App() {
     try {
       let res;
       if (editingBuildingId) {
-        res = await fetch(`${API_BASE_URL}/buildings/${editingBuildingId}`, {
+        res = await apiFetch(`/buildings/${editingBuildingId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(buildingForm),
         });
       } else {
-        res = await fetch(`${API_BASE_URL}/buildings`, {
+        res = await apiFetch('/buildings', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(buildingForm),
@@ -409,13 +436,13 @@ function App() {
       };
       let res;
       if (editingFloorId) {
-        res = await fetch(`${API_BASE_URL}/floors/${editingFloorId}`, {
+        res = await apiFetch(`/floors/${editingFloorId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
       } else {
-        res = await fetch(`${API_BASE_URL}/floors`, {
+        res = await apiFetch('/floors', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
@@ -451,13 +478,13 @@ function App() {
       };
       let res;
       if (editingFlatId) {
-        res = await fetch(`${API_BASE_URL}/flats/${editingFlatId}`, {
+        res = await apiFetch(`/flats/${editingFlatId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
       } else {
-        res = await fetch(`${API_BASE_URL}/flats`, {
+        res = await apiFetch('/flats', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
@@ -495,13 +522,13 @@ function App() {
       };
       let res;
       if (editingRoomId) {
-        res = await fetch(`${API_BASE_URL}/rooms/${editingRoomId}`, {
+        res = await apiFetch(`/rooms/${editingRoomId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
       } else {
-        res = await fetch(`${API_BASE_URL}/rooms`, {
+        res = await apiFetch('/rooms', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
@@ -536,13 +563,13 @@ function App() {
       };
       let res;
       if (editingBedId) {
-        res = await fetch(`${API_BASE_URL}/beds/${editingBedId}`, {
+        res = await apiFetch(`/beds/${editingBedId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
       } else {
-        res = await fetch(`${API_BASE_URL}/beds`, {
+        res = await apiFetch('/beds', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
@@ -791,7 +818,7 @@ function App() {
           };
 
           try {
-            const res = await fetch(`${API_BASE_URL}/buildings`, {
+            const res = await apiFetch('/buildings', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(payload),
@@ -877,7 +904,7 @@ function App() {
             };
 
             try {
-              const res = await fetch(`${API_BASE_URL}/floors`, {
+              const res = await apiFetch('/floors', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
@@ -979,7 +1006,7 @@ function App() {
             };
 
             try {
-              const res = await fetch(`${API_BASE_URL}/flats`, {
+              const res = await apiFetch('/flats', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
@@ -1095,7 +1122,7 @@ function App() {
             };
 
             try {
-              const res = await fetch(`${API_BASE_URL}/rooms`, {
+              const res = await apiFetch('/rooms', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
@@ -1207,7 +1234,7 @@ function App() {
             };
 
             try {
-              const res = await fetch(`${API_BASE_URL}/beds`, {
+              const res = await apiFetch('/beds', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
@@ -1307,7 +1334,7 @@ function App() {
             };
 
             try {
-              const res = await fetch(`${API_BASE_URL}/employees`, {
+              const res = await apiFetch('/employees', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
@@ -1354,9 +1381,9 @@ function App() {
 
   async function reloadBeds() {
     try {
-      const bedRes = await fetch(`${API_BASE_URL}/beds`);
+      const bedRes = await apiFetch('/beds');
       if (bedRes.ok) {
-        const bedJson = await bedRes.json();
+        const bedJson = (await safeJson(bedRes)) || [];
         setBeds(bedJson);
       }
     } catch {
@@ -1380,7 +1407,7 @@ function App() {
 
       let res;
       if (editingAssignmentId) {
-        res = await fetch(`${API_BASE_URL}/assignments/${editingAssignmentId}`, {
+        res = await apiFetch(`/assignments/${editingAssignmentId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -1391,7 +1418,7 @@ function App() {
           }),
         });
       } else {
-        res = await fetch(`${API_BASE_URL}/assignments`, {
+        res = await apiFetch('/assignments', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
@@ -1480,7 +1507,7 @@ function App() {
   async function handleDeleteAssignment(id, bedId) {
     if (!window.confirm('Delete this assignment?')) return;
     try {
-      const res = await fetch(`${API_BASE_URL}/assignments/${id}`, { method: 'DELETE' });
+      const res = await apiFetch(`/assignments/${id}`, { method: 'DELETE' });
       if (!res.ok) return;
 
       setAssignments((prev) => prev.filter((a) => a.AssignmentID !== id));
