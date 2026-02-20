@@ -14,7 +14,7 @@ import './App.css';
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://10.134.22.185:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
 function App() {
   const [health, setHealth] = useState(null);
